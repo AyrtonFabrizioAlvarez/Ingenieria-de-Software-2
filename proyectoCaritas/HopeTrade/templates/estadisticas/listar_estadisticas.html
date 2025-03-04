@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Estadísticas</title>
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">Estadísticas Principales</h1>
+    <div class="list-group mt-4">
+        <a href="{% url 'estadisticas:estadisticas_publicaciones' %}"
+           class="list-group-item list-group-item-action">Estadísticas de Publicaciones</a>
+
+        <a href="{% url 'estadisticas:estadisticas_intercambios' %}"
+           class="list-group-item list-group-item-action">Estadísticas de Intercambios</a>
+
+        <a href="{% url 'estadisticas:estadisticas_donaciones' %}"
+           class="list-group-item list-group-item-action">Estadísticas de Donaciones</a>
+    </div>
+</div>
+{% endblock content %}

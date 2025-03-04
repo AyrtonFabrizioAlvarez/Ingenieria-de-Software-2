@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Seleccionar Publicacion</title>
+{% endblock title %}
+{% block content %}
+{% for msg in messages %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+        <symbol id="check-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"></path>
+        </symbol>
+    </svg>
+
+    <div class="alert alert-success d-flex align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"></use></svg>
+        <div>
+            {{ msg }}
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+    <main class="container">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card" style="width: 20rem; position: relative;">
+                    <div class="card-body">
+                        {% if request.session.rol == 'usuario' %}
+                            {% if is_favorita %}
+                                <a href="{% url 'publicaciones:eliminar_publicacion_favorita' publicacion_favorita_id publicacion.id %}" class="favorite-icon" style="position: absolute; top: 10px; right: 10px;">
+                                    <i class="fas fa-star" style="color: gold;"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'publicaciones:agregar_publicacion_favorita' publicacion.id %}" class="favorite-icon" style="position: absolute; top: 10px; right: 10px;">
+                                    <i class="far fa-star"></i>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{% url 'sesiones:view_profile_user' publicacion.usuarioId.id %}">
+                            {{ publicacion.usuarioId.personaId.nombre }}
+                        </a>
+                        <h5 class="card-title mb-3"> {{publicacion.titulo}}</h5>
+                        <h6 class="card-subtitle mb-3 text-body-secondary">Categoria: {{ publicacion.categoriaId.titulo }}</h6>
+                        <h6 class="card-subtitle mb-3 text-body-secondary">{{ publicacion.descripcion }}</h6>
+                        <h7 class="card-subtitle mb-3 text-body-secondary">cantidad: {{ publicacion.cantidad }}</h7>
+                        <div class="col-md-8 text-center">
+                            <img src="data:image/png;base64,{{ publicacion_imagen }}"
+                                 class="img-fluid m-3 shadow-sm ratio-1x1 "
+                                 style="border: 1px solid #ddd"
+                                 alt="Imagen">
+                        </div>
+                        {% if request.session.rol == 'administrador'%}
+                            <a href="{% url 'publicaciones:eliminar_publicacion' publicacion.id %}" class="btn btn-danger">Eliminar</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if request.session.rol == 'usuario' %}
+                    {% if request.session.usuario_id == publicacion.usuarioId.personaId.id %}
+                        <div class="d-flex flex-column align-items-start">
+                            <a href="{% url 'ofrecimientos:ver_ofrecimientos' publicacion.id %}" class="btn mb-2" style="background-color: #8f33ff; color: white; border-color: #500ce1;">Ver ofrecimientos</a>
+                        </div>
+                    {% else %}
+                        {% if publicacion.estado == 'disponible' %}
+                            <div class="d-flex flex-column align-items-start">
+                                <a href="{% url 'ofrecimientos:realizar_ofrecimiento' publicacion.id %}" class="btn mb-2" style="background-color: #8f33ff; color: white; border-color: #500ce1;">Realizar ofrecimiento</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                <h3>Comentarios:</h3>
+                <ul>
+                    {% for comentario in comentarios %}
+                        <li>
+                            <a href="{% url 'sesiones:view_profile_user' comentario.usuarioId.id %}">
+                                {{ comentario.usuarioId.personaId.nombre }}:
+                            </a>
+                            {{ comentario.texto }}, {{ comentario.fecha }}
+                        </li>
+                    {% endfor %}
+                    {% if request.session.rol == 'usuario' %}
+                        <div class="d-flex flex-column align-items-start">
+                            <a href="{% url 'publicaciones:realizar_comentario' publicacion.id %}" class="btn btn-primary mb-2">Realizar comentario</a>
+                        </div>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </main>
+{% endblock %}
